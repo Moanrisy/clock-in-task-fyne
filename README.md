@@ -10,7 +10,8 @@ Using fyne toolkit to create desktop app using go language. The app will show cu
 
 ## Emacs function
 
-`;; Hook for clock-in
+```lisp
+;; Hook for clock-in
 (defun write-clock-in-title-hook()
 "Write clock in title into a file"
 (message (symbol-value 'org-clock-heading))
@@ -18,7 +19,8 @@ Using fyne toolkit to create desktop app using go language. The app will show cu
 (append-to-file "\n" nil "~/clock-in-title")
 )
 
-(add-hook 'org-clock-in-hook 'write-clock-in-title-hook)`
+(add-hook 'org-clock-in-hook 'write-clock-in-title-hook)
+```
 
 ## Power toys
 
