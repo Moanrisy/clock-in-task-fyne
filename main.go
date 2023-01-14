@@ -17,10 +17,10 @@ func checkErr(err error) {
 	}
 }
 
-func main() {
-	a := app.New()
-	w := a.NewWindow("Clock in Task")
-	dirname, _ := os.UserHomeDir()
+func setupTmpFile() (string, *os.File) {
+
+	dirname, err := os.UserHomeDir()
+	checkErr(err)
 	filePath := dirname + "/clock-in-title"
 	file, err := os.Open(filePath)
 	checkErr(err)
@@ -30,6 +30,14 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
+
+	return filePath, file
+}
+
+func main() {
+	a := app.New()
+	w := a.NewWindow("Clock in Task")
+	filePath, file := setupTmpFile()
 
 	cit := widget.NewLabel("Please clock in your task")
 	w.SetContent(cit)
