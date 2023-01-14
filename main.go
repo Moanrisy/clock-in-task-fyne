@@ -17,30 +17,38 @@ func checkErr(err error) {
 	}
 }
 
-func setupTmpFile() (string, *os.File) {
+func setupTmpFile() (string, *os.File, error) {
 
-	dirname, err := os.UserHomeDir()
-	checkErr(err)
+	dirname := os.TempDir()
 	filePath := dirname + "/clock-in-title"
-	file, err := os.Open(filePath)
-	checkErr(err)
+	var file *os.File
+	var err error
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		fmt.Println("File does not exist, proceeds to create /tmp/clock-in-title")
+		file, err = os.Create(filePath)
+		checkErr(err)
+	} else {
+		file, err = os.Open(filePath)
+		checkErr(err)
+	}
+
+	return filePath, file, err
+}
+
+func main() {
+	a := app.New()
+	w := a.NewWindow("Clock in Task")
+	filePath, file, err := setupTmpFile()
+
+	cit := widget.NewLabel("Please clock in your task")
+	w.SetContent(cit)
 
 	defer func() {
 		if err = file.Close(); err != nil {
 			log.Fatal(err)
 		}
 	}()
-
-	return filePath, file
-}
-
-func main() {
-	a := app.New()
-	w := a.NewWindow("Clock in Task")
-	filePath, file := setupTmpFile()
-
-	cit := widget.NewLabel("Please clock in your task")
-	w.SetContent(cit)
 
 	initialStat, err := os.Stat(filePath)
 	checkErr(err)
