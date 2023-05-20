@@ -20,6 +20,7 @@ Using fyne toolkit to create desktop app using go language. The app will show cu
 )
 
 (add-hook 'org-clock-in-hook 'write-clock-in-title-hook)
+(run-at-time nil 60 #'write-clock-in-title-hook)
 ```
 
 ## Power toys
