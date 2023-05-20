@@ -25,3 +25,8 @@ Using fyne toolkit to create desktop app using go language. The app will show cu
 ## Power toys
 
 This 3rd party app used to make window in window 11 can be used as 'always on top'
+
+## Run and Build this project on windows not working
+golang build constraints exclude all Go files in
+
+solution: https://github.com/fyne-io/fyne/issues/3820
