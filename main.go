@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -74,7 +75,13 @@ func main() {
 				bufString = strings.Replace(bufString, "\n", "", -1)
 
 				cit.Text = bufString
-				cit.Color = color.RGBA{R: 50, G: 205, B: 50, A: 255}
+
+				signature := getSignature(bufString)
+				if signature != nil && signature[0] <= signature[1] {
+					cit.Color = color.RGBA{R: 50, G: 205, B: 50, A: 255}
+				} else {
+					cit.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+				}
 
 				cit.Refresh()
 
@@ -87,4 +94,35 @@ func main() {
 
 	w.Resize(fyne.NewSize(200, 50))
 	w.ShowAndRun()
+}
+
+func getSignature(str string) []int {
+	parts := strings.Split(str, "/")
+	if len(parts) == 2 {
+		var signature []int
+		signature = append(signature, parseNumber(parts[0]))
+
+		// Stop extracting numbers when encountering non-numeric characters
+		var numString string
+		for _, char := range parts[1] {
+			if !unicode.IsDigit(char) {
+				break
+			}
+			numString += string(char)
+		}
+
+		signature = append(signature, parseNumber(numString))
+
+		return signature
+	}
+	return nil
+}
+
+func parseNumber(s string) int {
+	var num int
+	_, err := fmt.Sscanf(s, "%d", &num)
+	if err != nil {
+		return 0
+	}
+	return num
 }
