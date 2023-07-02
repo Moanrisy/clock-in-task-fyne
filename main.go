@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/widget"
+	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 )
 
 func checkErr(err error) {
@@ -38,11 +42,16 @@ func setupTmpFile() (string, *os.File, error) {
 
 func main() {
 	a := app.New()
+	a.Settings().SetTheme(&myTheme{})
 	w := a.NewWindow("Clock in Task")
 	filePath, file, err := setupTmpFile()
 
-	cit := widget.NewLabel("Please clock in your task")
-	w.SetContent(cit)
+	cit := canvas.NewText("Please clock in your task", theme.TextColor())
+	cit.Color = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	cit.TextSize = 15.0
+	container := container.NewVBox(cit)
+
+	w.SetContent(container)
 
 	defer func() {
 		if err = file.Close(); err != nil {
@@ -60,8 +69,14 @@ func main() {
 
 				buf := make([]byte, stat.Size())
 				_, err := file.Read(buf)
-				fmt.Println(string(buf))
-				cit.SetText(string(buf))
+
+				bufString := string(buf)
+				bufString = strings.Replace(bufString, "\n", "", -1)
+
+				cit.Text = bufString
+				cit.Color = color.RGBA{R: 50, G: 205, B: 50, A: 255}
+
+				cit.Refresh()
 
 				initialStat, err = os.Stat(filePath)
 				checkErr(err)
